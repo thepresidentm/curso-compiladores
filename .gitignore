@@ -1,0 +1,6 @@
+# Compiled Files
+*.out
+*.o
+
+# Logs
+.log
