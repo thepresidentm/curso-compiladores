@@ -1,5 +1,11 @@
 package com.compiler.lexer.nfa;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
+
 /**
  * Represents a Non-deterministic Finite Automaton (NFA) with a start and end state.
  * <p>
@@ -11,12 +17,12 @@ public class NFA {
     /**
      * The initial (start) state of the NFA.
      */
-    public final State startState;
+    public  State startState;
 
     /**
      * The final (accepting) state of the NFA.
      */
-    public final State endState;
+    public  State endState;
 
     /**
      * Constructs a new NFA with the given start and end states.
@@ -24,8 +30,8 @@ public class NFA {
      * @param end The final (accepting) state.
      */
     public NFA(State start, State end) {
-        // TODO: Implement constructor
-        throw new UnsupportedOperationException("Not implemented");
+        this.startState = start;
+        this.endState = end;
     }
 
     /**
@@ -33,7 +39,30 @@ public class NFA {
      * @return the start state
      */
     public State getStartState() {
-    // TODO: Implement getStartState
-    throw new UnsupportedOperationException("Not implemented");
+        return this.startState;
+    }
+
+    /**
+     * Returns the final (end) state of the NFA.
+     * @return the end state
+     */
+    public State getEndState() {
+        return this.startState;
+    }
+
+    @Override
+    public String toString(){
+        String output = "";
+        Stack<State> stack = new Stack<>();
+        Set<State> visited = new HashSet<>();
+        stack.push(this.startState);
+        while(!stack.empty()){
+            State current = stack.pop();
+            visited.add(current);
+            output += current.toString() + ", ";
+            for (Transition transition : current.transitions)
+                if (!visited.contains(transition.toState))stack.add(transition.toState);
+        }
+        return output;
     }
 }

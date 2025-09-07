@@ -1,5 +1,6 @@
 package com.compiler.lexer.nfa;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -42,8 +43,9 @@ public class State {
      * The state is not final by default.
      */
     public State() {
-    // TODO: Implement constructor
-    throw new UnsupportedOperationException("Not implemented");
+        this.id = nextId++; // Increments nextId after setting the this.id.
+        this.transitions = new LinkedList<>();
+        this.isFinal = false;
     }
 
     /**
@@ -51,8 +53,8 @@ public class State {
      * @return true if this state is final, false otherwise
      */
     public boolean isFinal() {
-    // TODO: Implement isFinal
-    throw new UnsupportedOperationException("Not implemented");
+        // return this.transitions.isEmpty(); 
+        return this.isFinal;
     }
 
     /**
@@ -60,9 +62,14 @@ public class State {
      * @return a list of states reachable by epsilon transitions
      */
     public List<State> getEpsilonTransitions() {
-    // TODO: Implement getEpsilonTransitions
     // Pseudocode: Iterate over transitions, if symbol is null, add to result list
-    throw new UnsupportedOperationException("Not implemented");
+        LinkedList<State> result = new LinkedList<>();
+
+        // Do we need the complete epsilon enclosure ???
+        for (Transition transition : this.transitions)
+            if(transition.symbol == null) result.add(transition.toState);
+        
+        return result;
     }
 
     /**
@@ -71,8 +78,32 @@ public class State {
      * @return a list of states reachable by the given symbol
      */
     public List<State> getTransitions(char symbol) {
-    // TODO: Implement getTransitions
     // Pseudocode: Iterate over transitions, if symbol matches, add to result list
-    throw new UnsupportedOperationException("Not implemented");
+        LinkedList<State> result = new LinkedList<>();
+
+
+        // Do we need the complete enclosure ???
+        for (Transition transition : this.transitions)
+            if(transition.symbol == symbol) result.add(transition.toState);
+
+        return result;
+    }
+
+    /**
+     * Adds a new transition to the state.
+     * @param symbol The symbol for the transition (null for epsilon).
+     * @param toState The destination state.
+     */
+    public void addTransition(Character symbol, State toState){
+        this.transitions.add(new Transition(symbol, toState));
+    }
+
+    @Override
+    public String toString(){
+        String transitions = "";
+        for (Transition transition : this.transitions){
+            transitions += transition.toString() + ", ";
+        }
+        return "{" + this.id + ": [" + transitions + "]}";
     }
 }

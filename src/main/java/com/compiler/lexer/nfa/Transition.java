@@ -26,7 +26,12 @@ public class Transition {
      * @param toState The destination state.
      */
     public Transition(Character symbol, State toState) {
-    // TODO: Implement constructor
-    throw new UnsupportedOperationException("Not implemented");
+        this.symbol = symbol;
+        this.toState = toState;
+    }
+
+    @Override
+    public String toString(){
+        return "("+this.toState.id+","+ (this.symbol == null ? "null" : this.symbol) + ")";
     }
 }

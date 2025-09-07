@@ -1,5 +1,7 @@
 package com.compiler.lexer.regex;
 
+import java.util.Stack;
+
 /**
  * Utility class for regular expression parsing using the Shunting Yard
  * algorithm.
@@ -30,7 +32,6 @@ public class ShuntingYard {
      * @return Regular expression with explicit concatenation operators.
      */
     public static String insertConcatenationOperator(String regex) {
-        // TODO: Implement insertConcatenationOperator
         /*
             Pseudocode:
             For each character in regex:
@@ -40,8 +41,31 @@ public class ShuntingYard {
                         - If so, append '·' to output
             Return output as string
          */
-        throw new UnsupportedOperationException("Not implemented");
+        String output = "";
+        for (int i = 0; i < regex.length(); i++){
+            Character current = regex.charAt(i);
+            output += current;
+            if (i == regex.length() - 1) continue; // Iterator at the end of string
+            Character next = regex.charAt(i + 1);
+
+            // In these cases current and next do not form implicit concat
+            if(
+                current == '(' ||
+                current == '|' ||
+                current == '·' ||
+                next == ')' ||
+                next == '*' ||
+                next == '+' ||
+                next == '?' ||
+                next == '|' ||
+                next == '·'
+            ) continue;
+
+            output += '·';
+        }
+        return output;
     }
+
 
     /**
      * Determines if the given character is an operand (not an operator or
@@ -51,12 +75,18 @@ public class ShuntingYard {
      * @return true if it is an operand, false otherwise.
      */
     private static boolean isOperand(char c) {
-        // TODO: Implement isOperand
         /*
         Pseudocode:
         Return true if c is not one of: '|', '*', '?', '+', '(', ')', '·'
          */
-        throw new UnsupportedOperationException("Not implemented");
+        return
+            c != '|' &&
+            c != '*' &&
+            c != '?' &&
+            c != '+' &&
+            c != '(' &&
+            c != ')' &&
+            c != '·';
     }
 
     /**
@@ -68,19 +98,59 @@ public class ShuntingYard {
      * @return Regular expression in postfix notation.
      */
     public static String toPostfix(String infixRegex) {
-        // TODO: Implement toPostfix
         /*
-        Pseudocode:
-        1. Define operator precedence map
-        2. Preprocess regex to insert explicit concatenation operators
-        3. For each character in regex:
-            - If operand: append to output
-            - If '(': push to stack
-            - If ')': pop operators to output until '(' is found
-            - If operator: pop operators with higher/equal precedence, then push current operator
-        4. After loop, pop remaining operators to output
-        5. Return output as string
+        Pseudocode: Wikipedias pseudocode.
          */
-        throw new UnsupportedOperationException("Not implemented");
+        Stack<Character> stack = new Stack<>();
+        String output = "";
+        String infix = ShuntingYard.insertConcatenationOperator(infixRegex);
+
+        for (int i = 0; i < infix.length(); i++){
+
+            Character currentCharacter = infix.charAt(i);
+
+            switch (currentCharacter) {
+
+                case '(':
+                    stack.push(currentCharacter);
+                    break;
+
+                case ')':
+                    for (Character operator = stack.pop(); operator != '('; operator = stack.pop())
+                        output += operator;
+                    break;
+                
+                case '*':
+                case '+':
+                case '?':
+                case '|':
+                case '·':
+                    while (!stack.isEmpty()) {
+                        if(
+                            stack.peek() == '(' ||
+                            ShuntingYard.getPrecedence(stack.peek()) < ShuntingYard.getPrecedence(currentCharacter))
+                            break;
+                        output += stack.pop();
+                    }
+                    stack.push(currentCharacter);
+                    break;
+
+                default: // Didnt match previous cases implies is operand
+                    output += currentCharacter;
+                    break;
+            }
+
+        }
+
+        while (!stack.isEmpty()) output += stack.pop();
+
+        return output;
     }
+
+    private static int getPrecedence(Character c){
+        if(c == '*' || c == '?' || c == '+' ) return 2;
+        if (c == '·') return 1;
+        return 0;
+    }
+
 }
