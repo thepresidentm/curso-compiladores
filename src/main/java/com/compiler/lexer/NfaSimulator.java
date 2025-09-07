@@ -68,28 +68,6 @@ public class NfaSimulator {
         return false;
     }
 
-    public String result(NFA nfa, String input) {
-        Set<State> currenStates = new HashSet<>();
-        Set<State> nextStates = new HashSet<>();
-        this.addEpsilonClosure(nfa.startState, currenStates);
-        for (int i = 0; i < input.length(); i++){
-            char currentCharacter = input.charAt(i);
-            for(State state : currenStates){
-                for (Transition transition : state.transitions){
-                    if(transition.symbol == null) continue;
-                    if(transition.symbol == currentCharacter){
-                        this.addEpsilonClosure(transition.toState, nextStates);
-                    }
-                }
-            }
-            currenStates = nextStates;
-            nextStates = new HashSet<>();
-        }
-
-        
-        return currenStates.toString();
-    }
-
     /**
      * Computes the epsilon-closure: all states reachable from 'start' using only epsilon (null) transitions.
      *
